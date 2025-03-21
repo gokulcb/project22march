@@ -37,9 +37,9 @@ jobs:
         run: python -m build
         
       - name: Log in to DockerHub
-        run: echo "${{ secrets.DOCKERHUBPAT }}" | docker login -u "${{ secrets.DOCKERHUBUSER }}" --password-stdin
+        run: echo "${{ secrets.DOCKERPAT }}" | docker login -u "${{ secrets.DOCKERUSER }}" --password-stdin
 
       - name: Build and push Docker image
         run: |
-          docker build -t ${{ secrets.DOCKERHUBUSER }}/bike_sharing_api:latest .
-          docker push ${{ secrets.DOCKERHUBUSER }}/bike_sharing_api:latest
+          docker build -t ${{ secrets.DOCKERUSER }}/bike_sharing_api:latest .
+          docker push ${{ secrets.DOCKERUSER }}/bike_sharing_api:latest
