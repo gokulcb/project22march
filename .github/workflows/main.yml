@@ -40,6 +40,7 @@ jobs:
         run: echo "${{ secrets.DOCKERPAT }}" | docker login -u "${{ secrets.DOCKERUSER }}" --password-stdin
 
       - name: Build and push Docker image
+        working-directory: ./bikeshare_project # Specify the child directory
         run: |
           docker build -t ${{ secrets.DOCKERUSER }}/bike_sharing_api:latest .
           docker push ${{ secrets.DOCKERUSER }}/bike_sharing_api:latest
