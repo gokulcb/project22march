@@ -1,0 +1,45 @@
+name: Build and Push Docker Image
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  docker:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        
+      - name: install requirements
+        working-directory: ./bikeshare_project # Specify the child directory
+        run: pip install -r requirements/requirements.txt
+
+      - name: Install Test requirements
+        working-directory: ./bikeshare_project # Specify the child directory
+        run: pip install -r requirements/test_requirements.txt
+        
+      - name: Install build package
+        working-directory: ./bikeshare_project # Specify the child directory
+        run: pip install build
+        
+      - name: Run training pipeline
+        working-directory: ./bikeshare_project # Specify the child directory
+        run: python bikeshare_model/train_pipeline.py
+
+      - name : Execute unit testcases
+        working-directory: ./bikeshare_project # Specify the child directory
+        run: pytest
+
+      - name: Build Model to generage whl file
+        working-directory: ./bikeshare_project # Specify the child directory
+        run: python -m build
+        
+      - name: Log in to DockerHub
+        run: echo "${{ secrets.DOCKERHUBPAT }}" | docker login -u "${{ secrets.DOCKERHUBUSER }}" --password-stdin
+
+      - name: Build and push Docker image
+        run: |
+          docker build -t ${{ secrets.DOCKERHUBUSER }}/bike_sharing_api:latest .
+          docker push ${{ secrets.DOCKERHUBUSER }}/bike_sharing_api:latest
